@@ -1,0 +1,4 @@
+*.pyc
+projects
+test_dir
+templates
