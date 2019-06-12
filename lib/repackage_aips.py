@@ -10,7 +10,7 @@ def repackage_aips(AIPRepackager):
         aip_dir = os.path.join(doing_dir, name)
         if os.path.exists(aip_dir):
             if name.endswith(".7z"):
-                print("Unarchiving {}".format(name))
+                print("Unarchiving {}".format(aip_dir))
                 cmd = [
                     "7za", "x", aip_dir, "-o{}".format(doing_dir)
                 ]
