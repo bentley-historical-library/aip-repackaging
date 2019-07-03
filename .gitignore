@@ -3,3 +3,4 @@ projects
 test_dir
 templates
 venv
+.vscode/

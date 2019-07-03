@@ -21,6 +21,7 @@ def get_names_for_repackaging(AIPRepackager):
         fieldnames = reader.fieldnames
         for row in reader:
             if not row.get("name"):
+                uuid = row["uuid"].strip()
                 row["name"] = AIPRepackager.project_metadata["uuids_to_names"][uuid]
             data.append(row)
 
