@@ -12,7 +12,7 @@ from lib.update_archivesspace import update_archivesspace
 
 
 class AIPRepackager(object):
-    def __init__(self, project_name, filesystem=None, collection_handle=None, aspace_instance=None, dspace_instance=None):
+    def __init__(self, project_name, filesystem=None, collection_handle=None, aspace_instance=None, dspace_instance=None, unpublish_dos=None):
         base_dir = os.path.dirname(os.path.abspath(__file__))
         projects_dir = os.path.join(base_dir, "projects")
         project_names = os.listdir(projects_dir)
@@ -45,6 +45,7 @@ class AIPRepackager(object):
         self.collection_handle = collection_handle
         self.aspace_instance = aspace_instance
         self.dspace_instance = dspace_instance
+        self.unpublish_dos = unpublish_dos
 
     def parse_project_csv(self):
         project_metadata = parse_project_csv(self)
@@ -79,6 +80,7 @@ if __name__ == "__main__":
     parser.add_argument('-r', '--repackage', action="store_true", help="Repackage AIPs")
     parser.add_argument('-d', '--deposit', action="store_true", help="Deposit AIPs")
     parser.add_argument('-u', '--update_aspace', action="store_true", help="Update ArchivesSpace")
+    parser.add_argument('--unpublish', action="store_true", default=False, help="Unpublish ArchivesSpace digital objects")
     parser.add_argument('--handle', help="DSpace collection handle")
     parser.add_argument('--dspace', help="DSpace instance")
     parser.add_argument('--aspace', help="ASpace instance")
@@ -88,7 +90,8 @@ if __name__ == "__main__":
                         args.filesystem,
                         args.handle,
                         args.aspace,
-                        args.dspace
+                        args.dspace,
+                        args.unpublish
                     )
 
     if args.copy:

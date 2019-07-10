@@ -75,8 +75,9 @@ def deposit_aips(AIPRepackager):
         item_handle = item["handle"]
 
         dspace.put_item_metadata(item_id, item_metadata)
-
+        dspace.logout()
         for subdir in os.listdir(aip_dir):
+            dspace = DAPPr(instance_name=AIPRepackager.dspace_instance)
             path_to_subdir = os.path.join(aip_dir, subdir)
             if subdir == "objects.zip":
                 bitstream = dspace.post_item_bitstream(item_id, path_to_subdir)
@@ -98,8 +99,12 @@ def deposit_aips(AIPRepackager):
                 dspace.put_bitstream(bitstream_id, bitstream)
                 bitstream_policy = [{"action": "READ", "rpType": "TYPE_CUSTOM", "groupId": dspace.groups["bentley_staff"]["group_id"]}]
                 dspace.put_bitstream_policy(bitstream_id, bitstream_policy)
-
+            dspace.logout()
+        
+        dspace = DAPPr(instance_name=AIPRepackager.dspace_instance)
         dspace.post_item_license(item_id)
+        dspace.logout()
+    
         print("DEPOSITED {}: {}".format(name, item_handle))
         AIPRepackager.project_metadata["uuids_to_handles"][uuid] = item_handle
 

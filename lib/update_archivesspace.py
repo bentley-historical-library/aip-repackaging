@@ -2,11 +2,15 @@ from bhlaspaceapiclient import ASpaceClient
 from .utils import parse_deposited_aips_csv
 
 
-def make_digital_object(title, handle, uuid):
+def make_digital_object(title, handle, uuid, unpublish_dos):
+    if unpublish_dos:
+        publish = False
+    else:
+        publish = True
     digital_object = {}
     digital_object["title"] = title
     digital_object["digital_object_id"] = uuid
-    digital_object["publish"] = True
+    digital_object["publish"] = publish
     digital_object["file_versions"] = [{
                                     'file_uri': handle,
                                     'xlink_show_attribute': "new",
@@ -29,7 +33,7 @@ def update_archivesspace(AIPRepackager):
         print("Updating {}".format(aip["archival_object_uri"]))
         archival_object = aspace.get_aspace_json(aip["archival_object_uri"])
         title = aspace.make_display_string(archival_object)
-        digital_object = make_digital_object(title, aip["handle"], aip["uuid"])
+        digital_object = make_digital_object(title, aip["handle"], aip["uuid"], AIPRepackager.unpublish_dos)
         response = aspace.post_aspace_json(digital_object_post_uri, digital_object)
         digital_object_uri = response["uri"]
         digital_object_instance = make_digital_object_instance(digital_object_uri)
