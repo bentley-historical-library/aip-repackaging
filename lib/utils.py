@@ -30,6 +30,11 @@ def parse_project_csv(AIPRepackager):
 
             if row.get("archival_object_uri"):
                 project_metadata["uuids_to_uris"][uuid] = row["archival_object_uri"]
+            elif row.get("archival_object_id"):
+                project_metadata["uuids_to_uris"][uuid] = "/repositories/2/archival_objects/{}".format(row["archival_object_id"])
+            elif row.get("archival_object_link"):
+                archival_object_id = row["archival_object_link"].split("_")[-1]
+                project_metadata["uuids_to_uris"][uuid] = "/repositories/2/archival_objects/{}".format(archival_object_id)
 
             if row.get("accessrestrict"):
                 project_metadata["uuids_to_accessrestricts"][uuid] = row["accessrestrict"]
