@@ -9,6 +9,22 @@ from bhlaspaceapiclient import ASpaceClient
 from dappr import DAPPr
 
 
+def determine_access_policy(dspace, project_metadata, uuid, default_group="bentley_staff"):
+    if project_metadata["uuids_to_accessrestricts"].get(uuid):
+        group_name = project_metadata["uuids_to_accessrestricts"][uuid]
+    else:
+        group_name = default_group
+
+    if not dspace.groups.get(group_name):
+        print("dappr configuration for group {} not found".format(group_name))
+        sys.exit()
+    else:
+        group_info = dspace.groups[group_name]
+        group_id = group_info["group_id"]
+        group_description = group_info["description"]
+        return {"group_id": group_id, "description": group_description}
+
+
 def deposit_aips(AIPRepackager):
     doing_dir = os.path.join(AIPRepackager.aip_to_item_queue, "Doing")
     aspace = ASpaceClient(instance_name=AIPRepackager.aspace_instance, expiring="false")
@@ -48,6 +64,12 @@ def deposit_aips(AIPRepackager):
         if accessrestrict:
             rights_access = aspace.sanitize_title(aspace.find_note_by_type(archival_object, "accessrestrict"))
             restriction_end_date = aspace.get_restriction_end_date(archival_object)
+
+        bitstream_restrictions = False
+        if accessrestrict or AIPRepackager.project_metadata["uuids_to_accessrestricts"].get(uuid):
+            bitstream_restrictions_metadata = determine_access_policy(dspace, AIPRepackager.project_metadata, uuid)
+            bitstream_restrictions = True
+
         date_issued = str(datetime.now().year)
         relation = aspace.build_hierarchy(archival_object, delimiter="-")
         author = aspace.get_resource_creator(resource)
@@ -83,13 +105,13 @@ def deposit_aips(AIPRepackager):
                 bitstream = dspace.post_item_bitstream(item_id, path_to_subdir)
                 bitstream_id = bitstream["id"]
                 bitstream["name"] = "objects.zip"
-                if rights_access:
-                    bitstream["description"] = dspace.groups["bentley_staff"]["description"]
+                if bitstream_restrictions:
+                    bitstream["description"] = bitstream_restrictions_metadata["description"]
                 else:
                     bitstream["description"] = "Archival materials."
                 dspace.put_bitstream(bitstream_id, bitstream)
-                if rights_access:
-                    bitstream_policy = [{"action": "READ", "rpType": "TYPE_CUSTOM", "groupId": dspace.groups["bentley_staff"]["group_id"]}]
+                if bitstream_restrictions:
+                    bitstream_policy = [{"action": "READ", "rpType": "TYPE_CUSTOM", "groupId": bitstream_restrictions_metadata["group_id"]}]
                     dspace.put_bitstream_policy(bitstream_id, bitstream_policy)
             elif subdir == "metadata.zip":
                 bitstream = dspace.post_item_bitstream(item_id, path_to_subdir)
@@ -100,11 +122,11 @@ def deposit_aips(AIPRepackager):
                 bitstream_policy = [{"action": "READ", "rpType": "TYPE_CUSTOM", "groupId": dspace.groups["bentley_staff"]["group_id"]}]
                 dspace.put_bitstream_policy(bitstream_id, bitstream_policy)
             dspace.logout()
-        
+
         dspace = DAPPr(instance_name=AIPRepackager.dspace_instance)
         dspace.post_item_license(item_id)
         dspace.logout()
-    
+
         print("DEPOSITED {}: {}".format(name, item_handle))
         AIPRepackager.project_metadata["uuids_to_handles"][uuid] = item_handle
 

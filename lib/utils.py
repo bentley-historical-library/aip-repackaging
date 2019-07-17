@@ -6,7 +6,8 @@ def parse_project_csv(AIPRepackager):
             "collections_to_uuids": {},
             "uuids_to_names": {},
             "uuids_to_uris": {},
-            "uuids_to_handles": {}
+            "uuids_to_handles": {},
+            "uuids_to_accessrestricts": {}
             }
 
     with open(AIPRepackager.project_csv, "r", newline="", encoding="utf-8") as f:
@@ -29,6 +30,9 @@ def parse_project_csv(AIPRepackager):
 
             if row.get("archival_object_uri"):
                 project_metadata["uuids_to_uris"][uuid] = row["archival_object_uri"]
+
+            if row.get("accessrestrict"):
+                project_metadata["uuids_to_accessrestricts"][uuid] = row["accessrestrict"]
 
     return project_metadata
 
