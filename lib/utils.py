@@ -1,4 +1,18 @@
 import csv
+import sys
+
+
+def parse_archival_object_uri(row):
+    if row.get("archival_object_uri"):
+        return row["archival_object_uri"]strip()
+    elif row.get("archival_object_id"):
+        return "/repositories/2/archival_objects/{}".format(row["archival_object_id"]strip())
+    elif row.get("archival_object_link"):
+        archival_object_id = row["archival_object_link"].strip().split("_")[-1]
+        return "/repositories/2/archival_objects/{}".format(archival_object_id)
+    else:
+        print("Archival object uri not found for {}".format(row["uuid"]))
+        sys.exit()
 
 
 def parse_project_csv(AIPRepackager):
@@ -24,21 +38,11 @@ def parse_project_csv(AIPRepackager):
                     project_metadata["collections_to_uuids"][collection] = []
             uuid = row["uuid"].strip()
             project_metadata["collections_to_uuids"][collection].append(uuid)
-
             if row.get("name"):
                 project_metadata["uuids_to_names"][uuid] = row["name"]
-
-            if row.get("archival_object_uri"):
-                project_metadata["uuids_to_uris"][uuid] = row["archival_object_uri"]
-            elif row.get("archival_object_id"):
-                project_metadata["uuids_to_uris"][uuid] = "/repositories/2/archival_objects/{}".format(row["archival_object_id"])
-            elif row.get("archival_object_link"):
-                archival_object_id = row["archival_object_link"].split("_")[-1]
-                project_metadata["uuids_to_uris"][uuid] = "/repositories/2/archival_objects/{}".format(archival_object_id)
-
+            project_metadata["uuids_to_uris"][uuid] = parse_archival_object_uri(row)
             if row.get("accessrestrict"):
                 project_metadata["uuids_to_accessrestricts"][uuid] = row["accessrestrict"]
-
     return project_metadata
 
 
@@ -66,7 +70,7 @@ def parse_deposited_aips_csv(AIPRepackager):
         reader = csv.DictReader(f)
         for row in reader:
             uuid = row["uuid"].strip()
-            archival_object_uri = row["archival_object_uri"].strip()
+            archival_object_uri = parse_archival_object_uri(row)
             dspace_handle = row["handle"].strip()
             aips.append({
                         "archival_object_uri": archival_object_uri,
