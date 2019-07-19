@@ -4,9 +4,9 @@ import sys
 
 def parse_archival_object_uri(row):
     if row.get("archival_object_uri"):
-        return row["archival_object_uri"]strip()
+        return row["archival_object_uri"].strip()
     elif row.get("archival_object_id"):
-        return "/repositories/2/archival_objects/{}".format(row["archival_object_id"]strip())
+        return "/repositories/2/archival_objects/{}".format(row["archival_object_id"].strip())
     elif row.get("archival_object_link"):
         archival_object_id = row["archival_object_link"].strip().split("_")[-1]
         return "/repositories/2/archival_objects/{}".format(archival_object_id)
