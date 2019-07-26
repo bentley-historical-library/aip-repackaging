@@ -1,5 +1,5 @@
 import os
-import shutil
+import subprocess
 
 
 def copy_from_aip_storage(AIPRepackager):
@@ -15,4 +15,8 @@ def copy_from_aip_storage(AIPRepackager):
             if os.path.exists(uuid_base_dirpath):
                 dst_dirpath = os.path.join(collection_dir, uuid_base_dirname)
                 print("COPYING {} TO {}".format(uuid_base_dirpath, dst_dirpath))
-                shutil.copytree(uuid_base_dirpath, dst_dirpath)
+                # https://github.com/artefactual/archivematica-storage-service/blob/3f21a96879103d6e550752770e344cff42cd919a/storage_service/locations/models/space.py#L508-L510
+                cmd = ['rsync', '-t', '-O', '--protect-args', '-vv',
+                   '--chmod=Fug+rw,o-rwx,Dug+rwx,o-rwx',
+                   '-r', uuid_base_dirpath, dst_dirpath]
+                subprocess.check_call(cmd)
