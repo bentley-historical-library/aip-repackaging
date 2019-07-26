@@ -13,7 +13,7 @@ def copy_from_aip_storage(AIPRepackager):
             uuid_base_dirname = uuid[:4]
             uuid_base_dirpath = os.path.join(AIPRepackager.aip_storage, uuid_base_dirname)
             if os.path.exists(uuid_base_dirpath):
-                dst_dirpath = os.path.join(collection_dir, uuid_base_dirname)
+                dst_dirpath = os.path.join(collection_dir)
                 print("COPYING {} TO {}".format(uuid_base_dirpath, dst_dirpath))
                 # https://github.com/artefactual/archivematica-storage-service/blob/3f21a96879103d6e550752770e344cff42cd919a/storage_service/locations/models/space.py#L508-L510
                 cmd = ['rsync', '-t', '-O', '--protect-args', '-vv',
