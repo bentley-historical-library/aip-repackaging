@@ -1,5 +1,3 @@
-git+https://github.com/bentley-historical-library/bhlaspaceapiclient.git#egg=bhlaspaceapiclient
-git+https://github.com/bentley-historical-library/DAPPr.git#egg=DAPPr
 certifi==2019.3.9
 chardet==3.0.4
 idna==2.8
