@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import argparse
 import os
 import sys
@@ -12,7 +15,7 @@ from lib.update_archivesspace import update_archivesspace
 
 
 class AIPRepackager(object):
-    def __init__(self, project_name, filesystem=None, collection_handle=None, aspace_instance=None, dspace_instance=None, unpublish_dos=None):
+    def __init__(self, project_dir, filesystem=None, collection_handle=None, aspace_instance=None, dspace_instance=None, unpublish_dos=None):
         base_dir = os.path.dirname(os.path.abspath(__file__))
         projects_dir = os.path.join(base_dir, "projects")
         project_names = os.listdir(projects_dir)
@@ -34,8 +37,8 @@ class AIPRepackager(object):
                 print("AIP to item queue location {} not found".format(self.aip_to_item_queue))
                 sys.exit()
 
-        self.project_name = project_name
-        self.project_dir = os.path.join(projects_dir, project_name)
+        self.project_dir = project_dir
+        self.project_name = os.path.split(self.project_dir)[-1]
         self.project_csv = os.path.join(self.project_dir, "{}.csv".format(self.project_name))
         if not os.path.exists(self.project_csv):
             print("Project CSV {} not found".format(self.project_csv))
@@ -72,7 +75,7 @@ class AIPRepackager(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Repackage an AIP for deposit to Deep Blue')
-    parser.add_argument('name', help='Enter the project name')
+    parser.add_argyment('-p', '--project_dir', help="Project directory")
     parser.add_argument('-f', '--filesystem', help="Filesystem base directory")
     parser.add_argument('-c', '--copy', action="store_true", help="Copy from AIP Storage")
     parser.add_argument('-g', '--get_names', action="store_true", help="Get names for repackaging")
@@ -86,7 +89,7 @@ if __name__ == "__main__":
     parser.add_argument('--aspace', help="ASpace instance")
     args = parser.parse_args()
     aip_repackager = AIPRepackager(
-                        args.name,
+                        args.project_dir,
                         args.filesystem,
                         args.handle,
                         args.aspace,
