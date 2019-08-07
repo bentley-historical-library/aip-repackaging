@@ -75,7 +75,7 @@ class AIPRepackager(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Repackage an AIP for deposit to Deep Blue')
-    parser.add_argyment('-p', '--project_dir', help="Project directory")
+    parser.add_argument('-p', '--project_dir', help="Project directory")
     parser.add_argument('-f', '--filesystem', help="Filesystem base directory")
     parser.add_argument('-c', '--copy', action="store_true", help="Copy from AIP Storage")
     parser.add_argument('-g', '--get_names', action="store_true", help="Get names for repackaging")
