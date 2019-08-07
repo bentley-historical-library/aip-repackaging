@@ -16,11 +16,8 @@ from lib.update_archivesspace import update_archivesspace
 
 class AIPRepackager(object):
     def __init__(self, project_dir, filesystem=None, collection_handle=None, aspace_instance=None, dspace_instance=None, unpublish_dos=None):
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        projects_dir = os.path.join(base_dir, "projects")
-        project_names = os.listdir(projects_dir)
-        if project_name not in project_names:
-            print("Project {} not found in {}".format(project_name, projects_dir))
+        if not os.path.exists(project_dir):
+            print("Project directory {} not found".format(project_dir))
             sys.exit()
 
         if filesystem is not None:
