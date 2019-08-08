@@ -14,6 +14,6 @@ setup(
     packages=find_packages(),
     scripts=['aip_repackager.py'],
     description='Bentley Historical Library scripts to repackage Archivematica AIPs',
-    dependency_links=['git+https://github.com/bentley-historical-library/DAPPr.git#egg=DAPPr-0.0.1', 'git+https://github.com/bentley-historical-library/bhlaspaceapiclient.git#egg=bhlaspaceapiclient-0.0.1'],
+    dependency_links=['git+https://github.com/bentley-historical-library/DAPPr#egg=DAPPr-0.0.1', 'git+https://github.com/bentley-historical-library/bhlaspaceapiclient#egg=bhlaspaceapiclient-0.0.1'],
     install_requires=requirements
 )
