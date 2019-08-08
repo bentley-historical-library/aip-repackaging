@@ -1,4 +1,5 @@
 import csv
+import os
 import sys
 
 
@@ -20,7 +21,6 @@ def parse_project_csv(AIPRepackager):
             "collections_to_uuids": {},
             "uuids_to_names": {},
             "uuids_to_uris": {},
-            "uuids_to_handles": {},
             "uuids_to_accessrestricts": {}
             }
 
@@ -47,34 +47,37 @@ def parse_project_csv(AIPRepackager):
 
 
 def create_deposited_aips_csv(AIPRepackager):
-    data = []
-    with open(AIPRepackager.project_csv, "r", newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        fieldnames = reader.fieldnames
-        for row in reader:
-            uuid = row["uuid"].strip()
-            row["handle"] = AIPRepackager.project_metadata["uuids_to_handles"][uuid]
-            data.append(row)
-    if "handle" not in fieldnames:
-        fieldnames.append("handle")
-
+    headers = ["uuid", "archival_object_uri", "handle"]
     with open(AIPRepackager.deposited_aips_csv, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(data)
+        writer = csv.writer(f)
+        writer.writerow(headers)
+
+
+def update_deposited_aips_csv(AIPRepackager, uuid, handle):
+    if not os.path.exists(AIPRepackager.deposited_aips_csv):
+        create_deposited_aips_csv(AIPRepackager)
+
+    archival_object_uri = AIPRepackager.project_metadata["uuids_to_uris"][uuid]
+    data = [uuid, archival_object_uri, handle]
+    with open(AIPRepackager.deposited_aips_csv, "a", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(data)
 
 
 def parse_deposited_aips_csv(AIPRepackager):
-    aips = []
-    with open(AIPRepackager.deposited_aips_csv, "r", newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            uuid = row["uuid"].strip()
-            archival_object_uri = parse_archival_object_uri(row)
-            dspace_handle = row["handle"].strip()
-            aips.append({
-                        "archival_object_uri": archival_object_uri,
-                        "uuid": uuid,
-                        "handle": dspace_handle
-                        })
-    return aips
+    if not os.path.exists(AIPRepackager.deposited_aips_csv):
+        return []
+    else:
+        aips = []
+        with open(AIPRepackager.deposited_aips_csv, "r", newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                uuid = row["uuid"].strip()
+                archival_object_uri = parse_archival_object_uri(row)
+                dspace_handle = row["handle"].strip()
+                aips.append({
+                            "archival_object_uri": archival_object_uri,
+                            "uuid": uuid,
+                            "handle": dspace_handle
+                            })
+        return aips
