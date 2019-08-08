@@ -3,8 +3,8 @@ from setuptools import setup, find_packages
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
-requirements.append("DAPPr=0.0.1")
-requirements.append("bhlaspaceapiclient=0.0.1")
+requirements.append("DAPPr==0.0.1")
+requirements.append("bhlaspaceapiclient==0.0.1")
 
 setup(
     name='aip-repackaging',
