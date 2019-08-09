@@ -35,7 +35,7 @@ class AIPRepackager(object):
                 sys.exit()
 
         self.project_dir = project_dir
-        self.project_name = os.path.split(self.project_dir)[-1]
+        self.project_name = os.path.split(self.project_dir.rstrip("/"))[-1]
         self.project_csv = os.path.join(self.project_dir, "{}.csv".format(self.project_name))
         if not os.path.exists(self.project_csv):
             print("Project CSV {} not found".format(self.project_csv))
@@ -72,13 +72,13 @@ class AIPRepackager(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Repackage an AIP for deposit to Deep Blue')
-    parser.add_argument('-p', '--project_dir', help="Project directory")
+    parser.add_argument('project_dir', help="Path to a project directory")
     parser.add_argument('-f', '--filesystem', help="Filesystem base directory")
     parser.add_argument('-c', '--copy', action="store_true", help="Copy from AIP Storage")
     parser.add_argument('-g', '--get_names', action="store_true", help="Get names for repackaging")
     parser.add_argument('-m', '--move_aips', action="store_true", help="Move AIPs")
     parser.add_argument('-r', '--repackage', action="store_true", help="Repackage AIPs")
-    parser.add_argument('-d', '--deposit', action="store_true", help="Deposit AIPs")
+    parser.add_argument('-d', '--deposit', action="store_true", help="Deposit AIPs to DSpace")
     parser.add_argument('-u', '--update_aspace', action="store_true", help="Update ArchivesSpace")
     parser.add_argument('--unpublish', action="store_true", default=False, help="Unpublish ArchivesSpace digital objects")
     parser.add_argument('--handle', help="DSpace collection handle")
@@ -93,6 +93,10 @@ if __name__ == "__main__":
                         args.dspace,
                         args.unpublish
                     )
+
+    if (args.copy or args.get_names or args.move_aips or args.repackage or args.deposit) and not args.filesystem:
+        print("Filesystem base directory (-f/--filesystem) must be specified for this action")
+        sys.exit()
 
     if args.copy:
         aip_repackager.copy_from_aip_storage()
