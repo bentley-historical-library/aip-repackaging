@@ -30,8 +30,10 @@ def parse_config(config_file, project_name):
         else:
             default_values = {}
 
-        if project_name and project_name in sections:
+        if project_name in sections:
             default_values.update({key: value for key, value in config[project_name].items()})
+        else:
+            print("project {} not found in config file {}".format(project_name, config_file))
 
         if "unpublish" in default_values:
             if default_values["unpublish"].lower() in ["t", "true", "y", "yes"]:
@@ -66,7 +68,7 @@ def parse_project_csv(AIPRepackager):
                 project_metadata["uuids_to_aip_names"][uuid] = row["aip_name"]
             if row.get("unpublish"):
                 if row["unpublish"].lower().strip() in ["t", "true", "y", "yes"]:
-                    project_metadata["uuids_to_unpublish"].append("uuid")
+                    project_metadata["uuids_to_unpublish"].append(uuid)
     return project_metadata
 
 
@@ -78,7 +80,7 @@ def update_project_csv(AIPRepackager, updated_field=None):
         if updated_field not in fieldnames:
             fieldnames.append(updated_field)
         for row in reader:
-            uuid = row["uuid"]
+            uuid = row["uuid"].strip()
             row[updated_field] = AIPRepackager.project_metadata["uuids_to_{}s".format(updated_field)].get(uuid)
             data.append(row)
 

@@ -75,4 +75,3 @@ def update_archivesspace(AIPRepackager):
             digital_object_instance = make_digital_object_instance(digital_object_uri)
             archival_object["instances"].append(digital_object_instance)
             aspace.update_aspace_object(archival_object["uri"], archival_object)
-        tqdm.write("Updated {}".format(uuid))

@@ -49,7 +49,7 @@ archivematica
 
 `aip_repackager.py -p /path/to/project.csv -f /path/to/archivematica -d [--deposit] --handle HANDLE`
 
-The `handle` argument must be supplied and must correspond to the collection that the AIPs will be deposited to.
+The `--handle` argument must be supplied and must correspond to the collection that the AIPs will be deposited to.
 
 Optional but useful arguments for depositing to DSpace include `--dspace INSTANCE_NAME` and `--aspace INSTANCE_NAME` with INSTANCE_NAME values corresponding to the names given to DSpace instances when configuring DAPPr and ASpace instances when configuring the bhlaspaceapiclient, respectively.
 

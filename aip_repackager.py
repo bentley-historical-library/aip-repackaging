@@ -76,10 +76,13 @@ if __name__ == "__main__":
 
     variable_args = ["project_csv", "filesystem", "handle", "aspace", "dspace", "unpublish"]
     if args.config:
-        configured_values = parse_config(args.config)
-        configured_values.update({key: value for key, value in vars(args).items() if key in variable_args})
+        if not args.project_name:
+            print("project name (--project_name) must be supplied along with config file")
+            sys.exit()
+        configured_values = parse_config(args.config, args.project_name)
+        configured_values.update({key: value for key, value in vars(args).items() if key in variable_args and vars(args).get(key)})
     else:
-        configured_values = {key: value for key, value in vars(args).items() if key in variable_args}
+        configured_values = {key: value for key, value in vars(args).items() if key in variable_args and vars(args).get(key)}
 
     if not configured_values.get("project_csv"):
         print("A project CSV must be specified")

@@ -1,7 +1,9 @@
+import bagit
 import os
 import re
 import subprocess
 import shutil
+import sys
 from tqdm import tqdm
 
 
@@ -12,17 +14,19 @@ def repackage_aips(AIPRepackager):
         aip_dir = os.path.join(doing_dir, name)
         if os.path.exists(aip_dir):
             if name.endswith(".7z"):
-                tqdm.write("Unarchiving {}".format(aip_dir))
                 cmd = [
                     "7za", "x", aip_dir, "-o{}".format(doing_dir)
                 ]
 
-                subprocess.check_call(cmd)
+                subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
                 name = re.sub(r"\.7z$", "", name).strip()
                 aip_dir = os.path.join(doing_dir, name)
 
-            tqdm.write("Repackaging {}".format(aip_dir))
+            if not bagit.Bag(aip_dir).is_valid():
+                print("AIP BAG {} IS NOT VALID".format(aip_dir))
+                sys.exit()
+
             aip_objects = os.path.join(aip_dir, "data", "objects")
             repackaged_objects = os.path.join(aip_dir, "objects")
             zipped_objects = os.path.join(aip_dir, "objects.zip")
@@ -47,7 +51,7 @@ def repackage_aips(AIPRepackager):
                 zipped_objects,
                 repackaged_objects
             ]
-            subprocess.check_call(cmd)
+            subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             shutil.rmtree(repackaged_objects)
 
             # zip metadata
@@ -62,7 +66,7 @@ def repackage_aips(AIPRepackager):
                 zipped_metadata,
                 aip_dir
             ]
-            subprocess.check_call(cmd)
+            subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
             for item in os.listdir(aip_dir):
                 if item in ["objects.zip", "metadata.zip"]:
