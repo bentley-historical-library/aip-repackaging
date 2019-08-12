@@ -1,12 +1,12 @@
+from bhlaspaceapiclient import ASpaceClient
+from dappr import DAPPr
 from datetime import datetime
 import os
 import re
 import sys
+from tqdm import tqdm
 
-from .utils import parse_deposited_aips_csv, update_project_csv
-
-from bhlaspaceapiclient import ASpaceClient
-from dappr import DAPPr
+from .utils import update_project_csv
 
 
 def determine_access_policy(dspace, project_metadata, uuid, default_group="bentley_staff"):
@@ -26,7 +26,6 @@ def determine_access_policy(dspace, project_metadata, uuid, default_group="bentl
 
 
 def deposit_aips(AIPRepackager):
-    deposited_aips = {aip["uuid"]: aip["handle"] for aip in parse_deposited_aips_csv(AIPRepackager)}
     doing_dir = os.path.join(AIPRepackager.aip_to_item_queue, "Doing")
     aspace = ASpaceClient(instance_name=AIPRepackager.aspace_instance, expiring="false")
     dspace = DAPPr(instance_name=AIPRepackager.dspace_instance)
@@ -35,11 +34,12 @@ def deposit_aips(AIPRepackager):
     collection_id = dspace_collection["id"]
     dspace.logout()
 
-    for uuid, name in AIPRepackager.project_metadata["uuids_to_names"].items():
-        if uuid not in deposited_aips:
+    for uuid in tqdm(AIPRepackager.project_metadata["uuids"], desc="Depositing AIPs"):
+        if uuid not in AIPRepackager.project_metadata["uuids_to_item_handles"]:
+            name = AIPRepackager.project_metadata["uuids_to_aip_names"][uuid]
             if name.endswith(".7z"):
                 name = re.sub(r"\.7z$", "", name).strip()
-            print("Depositing {}".format(name))
+            tqdm.write("Depositing {}".format(name))
             # create a new instance each time to avoid timeouts
             dspace = DAPPr(instance_name=AIPRepackager.dspace_instance)
             aip_dir = os.path.join(doing_dir, name)
@@ -129,10 +129,10 @@ def deposit_aips(AIPRepackager):
             dspace.post_item_license(item_id)
             dspace.logout()
 
-            print("DEPOSITED {}: {}".format(name, item_handle))
+            tqdm.write("Deposited {} to {}".format(name, item_handle))
             AIPRepackager.project_metadata["uuids_to_item_handles"][uuid] = item_handle
             update_project_csv(AIPRepackager, updated_field="item_handle")
         else:
-            print("UUID {} already deposited at: {}".format(uuid, deposited_aips[uuid]))
+            tqdm.write("UUID {} already deposited".format(uuid)
 
     aspace.logout()
