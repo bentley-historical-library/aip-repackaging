@@ -1,8 +1,8 @@
 from bhlaspaceapiclient import ASpaceClient
-from .utils import parse_deposited_aips_csv
+from tqdm import tqdm
 
 
-def update_existing_digital_object(aspace, archival_object, handle, unpublish_dos):
+def update_existing_digital_object(aspace, archival_object, handle, unpublish_do):
     existing_do_updated = False
     dos_without_file_versions = []
     for instance in archival_object.get("instances"):
@@ -10,14 +10,16 @@ def update_existing_digital_object(aspace, archival_object, handle, unpublish_do
             digital_object = aspace.get_aspace_json(instance["digital_object"]["ref"])
             if not digital_object["file_versions"]:
                 dos_without_file_versions.append(digital_object)
-    if dos_without_file_versions:
+            elif handle in digital_object["file_versions"][0]["file_uri"]:
+                existing_do_updated = True
+    if dos_without_file_versions and not existing_do_updated:
         do_to_update = dos_without_file_versions[0]
         do_to_update["file_versions"] = [{
                                         'file_uri': handle,
                                         'xlink_show_attribute': "new",
                                         'xlink_actuate_attribute': "onRequest"
                                         }]
-        if unpublish_dos:
+        if unpublish_do:
             do_to_update["publish"] = False
         else:
             do_to_update["publish"] = True
@@ -30,8 +32,8 @@ def update_existing_digital_object(aspace, archival_object, handle, unpublish_do
     return existing_do_updated
 
 
-def make_digital_object(title, handle, uuid, unpublish_dos):
-    if unpublish_dos:
+def make_digital_object(title, handle, uuid, unpublish_do):
+    if unpublish_do:
         publish = False
     else:
         publish = True
@@ -54,18 +56,23 @@ def make_digital_object_instance(digital_object_uri):
 
 
 def update_archivesspace(AIPRepackager):
-    deposited_aips = parse_deposited_aips_csv(AIPRepackager)
     aspace = ASpaceClient(AIPRepackager.aspace_instance)
     digital_object_post_uri = aspace.repository + "/digital_objects"
-    for aip in deposited_aips:
-        print("Updating {}".format(aip["archival_object_uri"]))
-        archival_object = aspace.get_aspace_json(aip["archival_object_uri"])
-        existing_do_updated = update_existing_digital_object(aspace, archival_object, aip["handle"], AIPRepackager.unpublish_dos)
+    for uuid in tqdm(AIPRepackager.project_metadata["uuids"], desc="Updating ArchivesSpace"):
+        if AIPRepackager.unpublish_dos or uuid in AIPRepackager.project_metadata["uuids_to_unpublish"]:
+            unpublish_do = True
+        else:
+            unpublish_do = False
+        handle = AIPRepackager.project_metadata["uuids_to_item_handles"][uuid]
+        archival_object_uri = AIPRepackager.project_metadata["uuids_to_uris"][uuid]
+        archival_object = aspace.get_aspace_json(archival_object_uri)
+        existing_do_updated = update_existing_digital_object(aspace, archival_object, handle, unpublish_do)
         if not existing_do_updated:
             title = aspace.make_display_string(archival_object)
-            digital_object = make_digital_object(title, aip["handle"], aip["uuid"], AIPRepackager.unpublish_dos)
+            digital_object = make_digital_object(title, handle, uuid, unpublish_do)
             response = aspace.post_aspace_json(digital_object_post_uri, digital_object)
             digital_object_uri = response["uri"]
             digital_object_instance = make_digital_object_instance(digital_object_uri)
             archival_object["instances"].append(digital_object_instance)
             aspace.update_aspace_object(archival_object["uri"], archival_object)
+        tqdm.write("Updated {}".format(uuid))

@@ -3,7 +3,7 @@ import os
 import re
 import sys
 
-from .utils import parse_deposited_aips_csv, update_deposited_aips_csv
+from .utils import parse_deposited_aips_csv, update_project_csv
 
 from bhlaspaceapiclient import ASpaceClient
 from dappr import DAPPr
@@ -130,7 +130,8 @@ def deposit_aips(AIPRepackager):
             dspace.logout()
 
             print("DEPOSITED {}: {}".format(name, item_handle))
-            update_deposited_aips_csv(AIPRepackager, uuid, item_handle)
+            AIPRepackager.project_metadata["uuids_to_item_handles"][uuid] = item_handle
+            update_project_csv(AIPRepackager, updated_field="item_handle")
         else:
             print("UUID {} already deposited at: {}".format(uuid, deposited_aips[uuid]))
 

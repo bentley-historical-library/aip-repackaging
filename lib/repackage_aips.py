@@ -2,15 +2,17 @@ import os
 import re
 import subprocess
 import shutil
+from tqdm import tqdm
 
 
 def repackage_aips(AIPRepackager):
     doing_dir = os.path.join(AIPRepackager.aip_to_item_queue, "Doing")
-    for uuid, name in AIPRepackager.project_metadata["uuids_to_names"].items():
+    for uuid in tqdm(AIPRepackager.project_metadata["uuids"], desc="Repackaging AIPs"):
+        name = AIPRepackager.project_metadata["uuids_to_aip_names"][uuid]
         aip_dir = os.path.join(doing_dir, name)
         if os.path.exists(aip_dir):
             if name.endswith(".7z"):
-                print("Unarchiving {}".format(aip_dir))
+                tqdm.write("Unarchiving {}".format(aip_dir))
                 cmd = [
                     "7za", "x", aip_dir, "-o{}".format(doing_dir)
                 ]
@@ -20,7 +22,7 @@ def repackage_aips(AIPRepackager):
                 name = re.sub(r"\.7z$", "", name).strip()
                 aip_dir = os.path.join(doing_dir, name)
 
-            print("Repackaging {}".format(name))
+            tqdm.write("Repackaging {}".format(aip_dir))
             aip_objects = os.path.join(aip_dir, "data", "objects")
             repackaged_objects = os.path.join(aip_dir, "objects")
             zipped_objects = os.path.join(aip_dir, "objects.zip")
@@ -69,4 +71,3 @@ def repackage_aips(AIPRepackager):
                     shutil.rmtree(os.path.join(aip_dir, item))
                 elif item in ["bag-info.txt", "bagit.txt", "manifest-sha256.txt", "tagmanifest-md5.txt"]:
                     os.remove(os.path.join(aip_dir, item))
-            print("{} repackaged".format(name))
