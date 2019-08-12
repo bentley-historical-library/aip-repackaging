@@ -133,6 +133,6 @@ def deposit_aips(AIPRepackager):
             AIPRepackager.project_metadata["uuids_to_item_handles"][uuid] = item_handle
             update_project_csv(AIPRepackager, updated_field="item_handle")
         else:
-            tqdm.write("UUID {} already deposited".format(uuid)
+            tqdm.write("UUID {} already deposited".format(uuid))
 
     aspace.logout()
