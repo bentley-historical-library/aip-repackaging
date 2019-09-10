@@ -13,7 +13,7 @@ from lib.update_archivesspace import update_archivesspace
 
 
 class AIPRepackager(object):
-    def __init__(self, project_csv, filesystem=None, collection_handle=None, aspace_instance=None, dspace_instance=None, unpublish_dos=None):
+    def __init__(self, project_csv, filesystem=None, collection_handle=None, aspace_instance=None, dspace_instance=None, unpublish_dos=None, default_group=None):
         if not os.path.exists(project_csv):
             print("Project CSV {} not found".format(project_csv))
             sys.exit()
@@ -39,6 +39,10 @@ class AIPRepackager(object):
         self.aspace_instance = aspace_instance
         self.dspace_instance = dspace_instance
         self.unpublish_dos = unpublish_dos
+        if default_group is not None:
+            self.default_group = default_group
+        else:
+            self.default_group = "bentley_staff"
 
     def parse_project_csv(self):
         project_metadata = parse_project_csv(self)
@@ -74,7 +78,7 @@ if __name__ == "__main__":
     parser.add_argument('--project_name', help="The name of the project in a configuration file")
     args = parser.parse_args()
 
-    variable_args = ["project_csv", "filesystem", "handle", "aspace", "dspace", "unpublish"]
+    variable_args = ["project_csv", "filesystem", "handle", "aspace", "dspace", "unpublish", "accessrestrict"]
     if args.config:
         if not args.project_name:
             print("project name (--project_name) must be supplied along with config file")
@@ -94,7 +98,8 @@ if __name__ == "__main__":
                         configured_values.get("handle"),
                         configured_values.get("aspace"),
                         configured_values.get("dspace"),
-                        configured_values.get("unpublish")
+                        configured_values.get("unpublish"),
+                        configured_values.get("accessrestrict")
                     )
 
     if (args.copy or args.repackage or args.deposit) and not configured_values.get("filesystem"):

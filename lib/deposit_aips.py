@@ -9,7 +9,7 @@ from tqdm import tqdm
 from .utils import update_project_csv
 
 
-def determine_access_policy(dspace, project_metadata, uuid, default_group="bentley_staff"):
+def determine_access_policy(dspace, project_metadata, uuid, default_group):
     if project_metadata["uuids_to_accessrestricts"].get(uuid):
         group_name = project_metadata["uuids_to_accessrestricts"][uuid]
     else:
@@ -69,7 +69,7 @@ def deposit_aips(AIPRepackager):
 
             bitstream_restrictions = False
             if accessrestrict or AIPRepackager.project_metadata["uuids_to_accessrestricts"].get(uuid):
-                bitstream_restrictions_metadata = determine_access_policy(dspace, AIPRepackager.project_metadata, uuid)
+                bitstream_restrictions_metadata = determine_access_policy(dspace, AIPRepackager.project_metadata, uuid, AIPRepackager.default_group)
                 bitstream_restrictions = True
 
             date_issued = str(datetime.now().year)
