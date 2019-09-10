@@ -74,7 +74,7 @@ dspace=INSTANCE_NAME
 accessrestrict=bentley_staff
 
 [project1]
-project_dir=/path/to/project_name
+project_csv=/path/to/project_csv
 handle=/2027.42/1234
 accessrestrict=bentley_only
 ```
