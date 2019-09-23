@@ -23,8 +23,8 @@ def repackage_aips(AIPRepackager):
                 name = re.sub(r"\.7z$", "", name).strip()
                 aip_dir = os.path.join(doing_dir, name)
 
-            if not bagit.Bag(aip_dir).is_valid():
-                print("AIP BAG {} IS NOT VALID".format(aip_dir))
+            if not bagit.Bag(aip_dir).is_valid(fast=True):
+                print("AIP BAG {} IS NOT VALID ACCORDING TO PAYLOAD OXUM".format(aip_dir))
                 sys.exit()
 
             aip_objects = os.path.join(aip_dir, "data", "objects")
@@ -33,7 +33,7 @@ def repackage_aips(AIPRepackager):
             zipped_metadata = os.path.join(aip_dir, "metadata.zip")
             os.mkdir(repackaged_objects)
             for item in os.listdir(aip_objects):
-                if item in ["metadata", "submissionDocumentation"]:
+                if item in ["metadata", "MetaData", "submissionDocumentation"]:
                     continue
                 os.rename(
                     os.path.join(aip_objects, item),
