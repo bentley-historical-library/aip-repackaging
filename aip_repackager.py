@@ -5,11 +5,11 @@ import argparse
 import os
 import sys
 
-from lib.copy_from_aip_storage import copy_from_aip_storage
-from lib.utils import parse_config, parse_project_csv
-from lib.repackage_aips import repackage_aips
-from lib.deposit_aips import deposit_aips
-from lib.update_archivesspace import update_archivesspace
+from aip_repackaging.copy_from_aip_storage import copy_from_aip_storage
+from aip_repackaging.utils import parse_config, parse_project_csv
+from aip_repackaging.repackage_aips import repackage_aips
+from aip_repackaging.deposit_aips import deposit_aips
+from aip_repackaging.update_archivesspace import update_archivesspace
 
 
 class AIPRepackager(object):
