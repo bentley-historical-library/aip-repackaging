@@ -9,6 +9,16 @@ from tqdm import tqdm
 from .utils import update_project_csv
 
 
+def create_videostreams(mivideo_ids):
+    videostreams = []
+    kaltura_player = 1455309001
+    for mivideo_id in mivideo_ids:
+        value = "https://cdnapisec.kaltura.com/p/1758271/sp/175827100/embedIframeJs/uiconf_id/29300931/partner_id/1758271?autoembed=true&entry_id=" + kaltura_video_id + "&playerId=kaltura_player_" + str(kaltura_player) + "&cache_st=1455309475&width=400&height=330&flashvars[streamerType]=auto"
+        kaltura_player += 1
+        videostreams.append({"key": "dc.identifier.videostream", "value": value})
+    return videostreams
+
+
 def determine_access_policy(dspace, project_metadata, uuid, default_group):
     if project_metadata["uuids_to_accessrestricts"].get(uuid):
         group_name = project_metadata["uuids_to_accessrestricts"][uuid]
@@ -92,6 +102,11 @@ def deposit_aips(AIPRepackager):
                 item_metadata.append({"key": "dc.date.open", "value": restriction_end_date})
             if description:
                 item_metadata.append({"key": "dc.description.abstract", "value": description})
+
+            if uuid in AIPRepackager.project_metadata["uuids_to_mivideo_ids"].keys():
+                mivideo_ids = AIPRepackager.project_metadata["uuids_to_mivideo_ids"][uuid]
+                videostreams = create_videostreams(mivideo_ids)
+                item_metadata.extend(videostreams)
 
             item_dictionary = {"name": title}
             item = dspace.post_collection_item(collection_id, item_dictionary)

@@ -51,6 +51,7 @@ def parse_project_csv(AIPRepackager):
             "uuids_to_aip_names": {},
             "uuids_to_accessrestricts": {},
             "uuids_to_item_handles": {},
+            "uuids_to_mivideo_ids": {},
             "uuids_to_unpublish": []
             }
 
@@ -66,6 +67,8 @@ def parse_project_csv(AIPRepackager):
                 project_metadata["uuids_to_item_handles"][uuid] = row["item_handle"]
             if row.get("aip_name"):
                 project_metadata["uuids_to_aip_names"][uuid] = row["aip_name"]
+            if row.get("mivideo_ids"):
+                project_metadata["uuids_to_mivideo_ids"][uuid] = [mivideo_id.strip() for mivideo_id in row["mivideo_ids"].split(";")]
             if row.get("unpublish"):
                 if row["unpublish"].lower().strip() in ["t", "true", "y", "yes"]:
                     project_metadata["uuids_to_unpublish"].append(uuid)
