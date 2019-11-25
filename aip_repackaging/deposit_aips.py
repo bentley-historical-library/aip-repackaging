@@ -13,7 +13,7 @@ def create_videostreams(mivideo_ids):
     videostreams = []
     kaltura_player = 1455309001
     for mivideo_id in mivideo_ids:
-        value = "https://cdnapisec.kaltura.com/p/1758271/sp/175827100/embedIframeJs/uiconf_id/29300931/partner_id/1758271?autoembed=true&entry_id=" + kaltura_video_id + "&playerId=kaltura_player_" + str(kaltura_player) + "&cache_st=1455309475&width=400&height=330&flashvars[streamerType]=auto"
+        value = "https://cdnapisec.kaltura.com/p/1758271/sp/175827100/embedIframeJs/uiconf_id/29300931/partner_id/1758271?autoembed=true&entry_id=" + mivideo_id + "&playerId=kaltura_player_" + str(kaltura_player) + "&cache_st=1455309475&width=400&height=330&flashvars[streamerType]=auto"
         kaltura_player += 1
         videostreams.append({"key": "dc.identifier.videostream", "value": value})
     return videostreams
