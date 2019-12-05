@@ -48,6 +48,7 @@ def parse_project_csv(AIPRepackager):
     project_metadata = {
             "uuids": [],
             "uuids_to_uris": {},
+            "uuids_to_digital_objects": {},
             "uuids_to_aip_names": {},
             "uuids_to_accessrestricts": {},
             "uuids_to_item_handles": {},
