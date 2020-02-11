@@ -7,7 +7,7 @@ The AIP repackaging scripts depend on the Bentley's DSpace API wrapper (DAPPr) a
 ```
 pip install git+https://github.com/bentley-historical-library/DAPPr.git
 pip install git+https://github.com/bentley-historical-library/bhlaspaceapiclient.git
-pip install git+https://github.com/djpillen/aip-repackaging.git
+pip install git+https://github.com/bentley-historical-library/aip-repackaging.git
 ```
 
 ## Use
