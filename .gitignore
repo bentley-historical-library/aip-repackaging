@@ -4,3 +4,4 @@ test_dir
 templates
 venv
 .vscode/
+config.cfg
