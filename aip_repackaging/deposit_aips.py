@@ -41,7 +41,7 @@ def deposit_aips(AIPRepackager):
     dspace = DAPPr(instance_name=AIPRepackager.dspace_instance)
 
     dspace_collection = dspace.get_handle(AIPRepackager.collection_handle)
-    collection_id = dspace_collection["id"]
+    collection_id = dspace_collection["uuid"]
     dspace.logout()
 
     for uuid in tqdm(AIPRepackager.project_metadata["uuids"], desc="Depositing AIPs"):
@@ -110,7 +110,7 @@ def deposit_aips(AIPRepackager):
 
             item_dictionary = {"name": title}
             item = dspace.post_collection_item(collection_id, item_dictionary)
-            item_id = item["id"]
+            item_id = item["uuid"]
             item_handle = item["handle"]
 
             dspace.put_item_metadata(item_id, item_metadata)
@@ -120,7 +120,7 @@ def deposit_aips(AIPRepackager):
                 path_to_subdir = os.path.join(aip_dir, subdir)
                 if subdir == "objects.zip":
                     bitstream = dspace.post_item_bitstream(item_id, path_to_subdir)
-                    bitstream_id = bitstream["id"]
+                    bitstream_id = bitstream["uuid"]
                     bitstream["name"] = "objects.zip"
                     if bitstream_restrictions:
                         bitstream["description"] = bitstream_restrictions_metadata["description"]
@@ -132,7 +132,7 @@ def deposit_aips(AIPRepackager):
                         dspace.put_bitstream_policy(bitstream_id, bitstream_policy)
                 elif subdir == "metadata.zip":
                     bitstream = dspace.post_item_bitstream(item_id, path_to_subdir)
-                    bitstream_id = bitstream["id"]
+                    bitstream_id = bitstream["uuid"]
                     bitstream["name"] = "metadata.zip"
                     bitstream["description"] = "Administrative information. Access restricted to Bentley staff."
                     dspace.put_bitstream(bitstream_id, bitstream)
