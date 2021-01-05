@@ -41,7 +41,7 @@ def deposit_aips(AIPRepackager):
     dspace = DAPPr(instance_name=AIPRepackager.dspace_instance)
 
     dspace_collection = dspace.get_handle(AIPRepackager.collection_handle)
-    collection_id = dspace_collection["id"]
+    collection_id = dspace_collection["uuid"]
     dspace.logout()
 
     for uuid in tqdm(AIPRepackager.project_metadata["uuids"], desc="Depositing AIPs"):
