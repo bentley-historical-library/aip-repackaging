@@ -5,7 +5,7 @@ chardet==3.0.4
 dappr==0.0.1
 humanize==0.5.1
 idna==2.8
-lxml==4.3.4
+lxml==4.6.2
 requests==2.22.0
 tqdm==4.33.0
 urllib3==1.25.3
