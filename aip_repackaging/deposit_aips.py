@@ -87,13 +87,15 @@ def deposit_aips(AIPRepackager):
             author = aspace.get_resource_creator(resource)
             title = aspace.make_display_string(archival_object)
             rights_copyright = "This content may be under copyright. Researchers are responsible for determining the appropriate use or reuse of materials. Please consult the collection finding aid or catalog record for more information."
+            dc_type = "Archival Material"
 
             item_metadata = [
                 {"key": "dc.title", "value": title},
                 {"key": "dc.contributor.author", "value": author},
                 {"key": "dc.date.issued", "value": date_issued},
                 {"key": "dc.rights.copyright", "value": rights_copyright},
-                {"key": "dc.relation.ispartofseries", "value": relation}
+                {"key": "dc.relation.ispartofseries", "value": relation},
+                {"key": "dc.type", "value": dc_type}
             ]
 
             if rights_access:
