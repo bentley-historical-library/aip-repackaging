@@ -43,6 +43,7 @@ def repackage_aips(AIPRepackager):
             # zip objects
             cmd = [
                 "7za", "a",
+                "-mx=0",
                 "-bd",
                 "-tzip",
                 "-y",
@@ -57,6 +58,7 @@ def repackage_aips(AIPRepackager):
             # zip metadata
             cmd = [
                 "7za", "a",
+                "-mx=0",
                 "-bd",
                 "-tzip",
                 "-y",
