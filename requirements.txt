@@ -1,6 +1,6 @@
 bagit==1.7.0
 bhlaspaceapiclient==0.0.1
-certifi==2019.3.9
+certifi==2022.12.7
 chardet==3.0.4
 dappr==0.0.1
 humanize==0.5.1
