@@ -75,5 +75,5 @@ def repackage_aips(AIPRepackager):
                     continue
                 elif item == "data":
                     shutil.rmtree(os.path.join(aip_dir, item))
-                elif item in ["bag-info.txt", "bagit.txt", "manifest-sha256.txt", "tagmanifest-md5.txt"]:
+                elif item in ["bag-info.txt", "bagit.txt", "manifest-sha256.txt", "tagmanifest-md5.txt", "tagmanifest-sha256.txt"]:
                     os.remove(os.path.join(aip_dir, item))
